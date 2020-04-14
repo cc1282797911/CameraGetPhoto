@@ -26,6 +26,8 @@ public class CameraView extends RelativeLayout {
 
     private OnSizeChangeListener onSizeChangeListener;
 
+    private boolean isCreated = false;
+
     public CameraView(Context context, AttributeSet attrs) {
         super(context, attrs);
         surfaceView = new SurfaceView(context);
@@ -37,6 +39,7 @@ public class CameraView extends RelativeLayout {
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
+                isCreated = true;
                 Log.v(tag, "surfaceCreated");
             }
 
@@ -48,6 +51,7 @@ public class CameraView extends RelativeLayout {
 
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
+                isCreated = false;
                 Log.v(tag, "surfaceDestroyed");
                 if (camera != null) {
                     camera.stopPreview();
@@ -67,6 +71,9 @@ public class CameraView extends RelativeLayout {
         if (camera != null) {
             camera.stopPreview();
             camera.release();
+        }
+        if (!isCreated) {//创建了才能使用
+            return;
         }
         try {
             camera = Camera.open(0);
